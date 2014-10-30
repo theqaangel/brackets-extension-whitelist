@@ -27,6 +27,7 @@ define(function (require, exports, module){
     function disableExtensionManager()
     {
         CommandManager.get("file.extensionManager").setEnabled(false);
+        $("#toolbar-extension-manager").hide();
     }
 
     function dialogAddedMutation(mutation){
