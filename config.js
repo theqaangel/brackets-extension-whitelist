@@ -14,7 +14,7 @@ define(function (require, exports, module){
         state: 'production',
 
         whitelist: [
-            "ohnnyj.numbertabs",
+            "ohnnyj.numbertabs"
         ]
     }
 });

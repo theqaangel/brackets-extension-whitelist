@@ -4,7 +4,15 @@ define(function (require, exports, module){
         extensionService = require('./extensions'),
         dialogId = '.extension-manager-dialog.modal'
 
+        var CommandManager = brackets.getModule('command/CommandManager');
+
     function init(){
+
+        if(config.whitelist.length === 0)
+        {
+            disableExtensionManager();
+        }
+
         var observer = new MutationObserver(function(mutations){
             mutations.forEach(function(mutation) {
                 if (mutation.type === 'childList' && mutation.addedNodes && mutation.addedNodes.length === 1){
@@ -12,8 +20,13 @@ define(function (require, exports, module){
                 }
             });
         }),
-            observerConfig = config.mutationObserverConfig;
+        observerConfig = config.mutationObserverConfig;
         observer.observe(target, observerConfig);
+    }
+
+    function disableExtensionManager()
+    {
+        CommandManager.get("file.extensionManager").setEnabled(false);
     }
 
     function dialogAddedMutation(mutation){
@@ -22,6 +35,8 @@ define(function (require, exports, module){
         function registryUpdateAction(){
             waitForRegistry = false;
         }
+
+        mutateInstallDropZone($(mutation.addedNodes[0]));
 
         extensionService.updateRegistry()
             .then(registryUpdateAction, registryUpdateAction);
@@ -47,6 +62,8 @@ define(function (require, exports, module){
     function mutateExistingExtensions(targets){
         if (targets.length === 0) return;
 
+        mutateInfoMessage("NOTE: All listed extensions are verified.");
+
         for(var idx = 0; idx < targets.length; idx++){
 
             var target = targets[idx];
@@ -58,6 +75,23 @@ define(function (require, exports, module){
                $t.hide(); 
             }
         }
+    }
+
+    function mutateInstallDropZone(target){
+        target.find('#install-drop-zone').hide();
+    }
+
+    function mutateInfoMessage(text){
+
+        if(typeof(text) !== 'undefined' && text.length > 0)
+        {
+            $('.info-message').html(text);
+        }
+        else
+        {
+            $('.info-message').hide();
+        }
+        
     }
 
     exports.init = init;
